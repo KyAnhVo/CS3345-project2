@@ -213,7 +213,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * Node and Enum
    */
 
-  private static class Node<E>
+  public static class Node<E>
   {
     public E val;
     public Node<E> left, right, parent;
