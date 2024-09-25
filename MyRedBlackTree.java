@@ -1,8 +1,8 @@
 /**
  * Implemention file for CS 3345.HON.24F Programming Project #2.
  * <p>
- * Student name:
- * Student NetID: 
+ * Student name:  Ky Anh Vo
+ * Student NetID: kxv220016
  *
  * @param <E> The element's type.
  */
@@ -102,7 +102,33 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @returns Number of elements in list.
    */
   public int size() {
-
+    return this.size;
   }
-}
 
+  // properties
+
+  private size;
+  private Node<E> root;
+
+  /**
+   * Node and Enum
+   */
+
+  private static class Node<E>
+  {
+    public E element;
+    public Node<E> left, right, parent;
+    public Color color;
+
+    public Node(E element, Color color, Node<E> parent)
+    {
+      this.element = element;
+      this.color = color;
+      this.parent = parent;
+      this.left = null;
+      this.right = null;
+    }
+  }
+
+  public static enum Color { RED, BLACK }
+}
