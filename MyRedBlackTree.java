@@ -34,7 +34,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * Implementation should run in O(n) time for a tree of n elements.
    */
   public void printAll() {
-    printNode(root, 0);
+    printNode(this.root, 0);
   }
 
   private void printNode(Node<E> node, int depth)
@@ -71,7 +71,20 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @returns true if the tree contains the element or false otherwise.
    */
   public boolean contains(E element) {
+    Node<E> curr = this.root;
+    
+    while (curr != null)
+    {
+      int compare = element.compareTo(curr.val);
+      if (compare == 0)
+        return true;
+      else if (compare > 0)
+        curr = curr.right;
+      else
+        curr = curr.left;
+    }
 
+    return false; // curr == null, which means no element found
   }
 
   /**
@@ -82,10 +95,12 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @returns The minimum element of the tree or null if tree is empty.
    */
   public E findMin() {
-    Node<E> curr = root;
-    while (curr != null)
+    if (this.root == null) return null;
+
+    Node<E> curr = this.root;
+    while (curr.left != null)
       curr = curr.left;
-    return curr.val
+    return curr.val;
   }
 
   /**
@@ -96,8 +111,10 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @returns The maximum element of the tree or null if tree is empty.
    */
   public E findMax() {
-    Node<E> curr = root;
-    while (curr != null)
+    if (this.root == null) return null;
+
+    Node<E> curr = this.root;
+    while (curr.right != null)
       curr = curr.right;
     return curr.val;
   }
