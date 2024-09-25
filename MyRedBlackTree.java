@@ -11,7 +11,8 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * Instantiate an empty red-black tree.
    */
   MyRedBlackTree() {
-
+    this.root = null;
+    this.size = 0;
   }
 
   /**
@@ -107,7 +108,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
 
   // properties
 
-  private size;
+  private int size;
   private Node<E> root;
 
   /**
