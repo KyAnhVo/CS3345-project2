@@ -106,6 +106,58 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
     return this.size;
   }
 
+  // ROTATION OPERATIONS
+
+  /**
+   * rotate child up and parent down
+   * @param child
+   */
+
+  private void singleRotation(Node<E> child)
+  {
+    Node<E> parent = child.parent,
+            grandparent = parent.parent,
+            grandchild;
+
+    // change left / right nodes
+
+    if (child == parent.left)
+    {
+      grandchild = child.right;
+      child.right = parent;
+      parent.left = grandchild;
+    }
+    else
+    {
+      grandchild = child.left;
+      child.left = parent;
+      parent.right = grandchild;
+    }
+
+    // change parent nodes
+
+    parent.parent = child;
+    child.parent = grandparent;
+    if (grandchild != null)
+      grandchild.parent = parent;
+    
+    // change grandparent's child
+    
+    if (grandparent != null)
+    {
+      if (grandparent.left == parent)
+        grandparent.left = child;
+      else
+        grandparent.right = child;
+    }
+
+    // swap color of parent and child
+
+    Color parentColor = parent.color;
+    parent.color = child.color;
+    child.color = parentColor;
+  }
+
   // properties
 
   private int size;
