@@ -34,7 +34,32 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * Implementation should run in O(n) time for a tree of n elements.
    */
   public void printAll() {
+    printNode(root, 0);
+  }
 
+  private void printNode(Node<E> node, int depth)
+  {
+    if (node == null) return;
+
+    // traverse left subtree
+    printNode(node.left, depth + 1);
+
+    // print ==...==val
+
+    for (int i = 0; i < depth; i++)
+    {
+      System.out.print("==");
+    }
+    System.out.print(node.val);
+
+    // print (color)
+
+    System.out.print(" (");
+    System.out.print(node.color);
+    System.out.println(")");
+
+    // traverse right subtree
+    printNode(node.right, depth + 1);
   }
 
   /**
@@ -57,7 +82,10 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @returns The minimum element of the tree or null if tree is empty.
    */
   public E findMin() {
-
+    Node<E> curr = root;
+    while (curr != null)
+      curr = curr.left;
+    return curr.val
   }
 
   /**
@@ -68,7 +96,10 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @returns The maximum element of the tree or null if tree is empty.
    */
   public E findMax() {
-
+    Node<E> curr = root;
+    while (curr != null)
+      curr = curr.right;
+    return curr.val;
   }
 
   /**
@@ -115,9 +146,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
 
   private void singleRotation(Node<E> child)
   {
-    Node<E> parent = child.parent,
-            grandparent = parent.parent,
-            grandchild;
+    Node<E> parent = child.parent, grandparent = parent.parent, grandchild;
 
     // change left / right nodes
 
@@ -169,13 +198,13 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
 
   private static class Node<E>
   {
-    public E element;
+    public E val;
     public Node<E> left, right, parent;
     public Color color;
 
-    public Node(E element, Color color, Node<E> parent)
+    public Node(E val, Color color, Node<E> parent)
     {
-      this.element = element;
+      this.val = val;
       this.color = color;
       this.parent = parent;
       this.left = null;
@@ -183,5 +212,5 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
     }
   }
 
-  public static enum Color { RED, BLACK }
+  public static enum Color { red, black }
 }
