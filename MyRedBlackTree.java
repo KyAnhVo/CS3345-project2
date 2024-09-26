@@ -6,6 +6,9 @@
  *
  * @param <E> The element's type.
  */
+
+import java.lang.Math;
+
 public class MyRedBlackTree<E extends Comparable<? super E>> {
 
   /**
@@ -16,8 +19,13 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
     MyRedBlackTree<Integer> tree = new MyRedBlackTree<>();
     for (int n = 0; n <= 10; n++)
     {
-      System.out.printf("%nn = %d%n---------%n", n);
-      tree.insert(5-n);
+      int ins = (int) (Math.random() * 20);
+      System.out.print("Insert: ");
+      System.out.println(ins);
+      System.out.println();
+
+      tree.insert(ins);
+      System.out.printf("size = %d%n", tree.size());
       tree.printAll();
 
       System.out.print("\n\n=============================\n\n");
@@ -161,6 +169,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
       throw new NullPointerException();
     
     Node<E> curr = this.insertNoBalance(element);
+    if (curr == null) return;
     this.balance(curr);
   }
 
@@ -179,8 +188,6 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
     {
       this.root = new Node<E>(element, Color.black, null);
       this.size++;
-      this.printAll();
-      System.out.printf("--------%n");
       return this.root;
     }
 
@@ -205,8 +212,6 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
           curr.right = new Node<E>(element, Color.red, curr);
           curr = curr.right;
           this.size++;
-          this.printAll();
-          System.out.printf("--------%n");
           return curr;
         }
       }
@@ -221,8 +226,6 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
         curr.left = new Node<E>(element, Color.red, curr);
         curr = curr.left;
         this.size++;
-        this.printAll();
-        System.out.printf("--------%n");
         return curr;
       }
       
