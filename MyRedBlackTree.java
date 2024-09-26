@@ -1,5 +1,5 @@
 /**
- * Implemention file for CS 3345.HON.24F Programming Project #2.
+ * Implementation file for CS 3345.HON.24F Programming Project #2.
  * <p>
  * Student name:  Ky Anh Vo
  * Student NetID: kxv220016
@@ -7,6 +7,23 @@
  * @param <E> The element's type.
  */
 public class MyRedBlackTree<E extends Comparable<? super E>> {
+
+  /**
+   * Debug main
+   */
+  public static void main(String[] args)
+  {
+    MyRedBlackTree<Integer> tree = new MyRedBlackTree<>();
+    for (int n = 0; n <= 10; n++)
+    {
+      System.out.printf("%nn = %d%n---------%n", n);
+      tree.insert(5-n);
+      tree.printAll();
+
+      System.out.print("\n\n=============================\n\n");
+    }
+  }
+
   /**
    * Instantiate an empty red-black tree.
    */
@@ -18,7 +35,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
   /**
    * Print all elements of tree in sorted order with the color of each element's node.
    * Elements are printed one line at a time, each followed by a space and then
-   * its color in paranethes.
+   * its color in parentheses.
    * Also, each element is indented a number of '=' equal to twice the node's depth.
    * <p>
    * For example, a tree containing 5, 10, 15, 20, 25, and 30 might be printed as
@@ -37,6 +54,12 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
     printNode(this.root, 0);
   }
 
+  /**
+   * Print 2*depth ='s followed by node's value and color
+   * in an inorder traversal order.
+   * @param node
+   * @param depth
+   */
   private void printNode(Node<E> node, int depth)
   {
     if (node == null) return;
@@ -63,7 +86,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
   }
 
   /**
-   * Returns whether or not the tree contains the given element.
+   * Returns whether the tree contains the given element.
    * <p>
    * Implementation should run in O(log n) time for a tree of n elements.
    *
@@ -124,11 +147,131 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * If the element already exists in the tree, this method makes no changes.
    * <p>
    * Implementation should run in O(log n) time for a tree of n elements.
+   * 
+   * will throw NullPointerException when element == null.
    *
    * @param element The element to be inserted.
+   * @returns node that have been inserted, or null if element is already
+   * in the tree.
    */
   public void insert(E element) {
 
+    // null check element
+    if (element == null)
+      throw new NullPointerException();
+    
+    Node<E> curr = this.insertNoBalance(element);
+    this.balance(curr);
+  }
+
+  /**
+   * Used for insert before balancing in inset()
+   * @param element
+   * @return
+   */
+  private Node<E> insertNoBalance(E element)
+  {
+    Node<E> curr = root;
+
+    // CASE 1: EMPTY TREE
+
+    if (curr == null)
+    {
+      this.root = new Node<E>(element, Color.black, null);
+      this.size++;
+      this.printAll();
+      System.out.printf("--------%n");
+      return this.root;
+    }
+
+    // Insert
+
+    while (true)
+    {
+      int compare = element.compareTo(curr.val);
+
+      if (compare == 0) // do not need to insert
+        return null;
+      
+      if (compare > 0) // element > curr.val
+      {
+        if (curr.right != null) // go to right node
+        { 
+          curr = curr.right;
+          continue;
+        }
+        else // insert new node
+        { 
+          curr.right = new Node<E>(element, Color.red, curr);
+          curr = curr.right;
+          this.size++;
+          this.printAll();
+          System.out.printf("--------%n");
+          return curr;
+        }
+      }
+      // compare < 0
+      if (curr.left != null) // go to left node
+      {
+        curr = curr.left;
+        continue;
+      }
+      else // insert new node
+      {
+        curr.left = new Node<E>(element, Color.red, curr);
+        curr = curr.left;
+        this.size++;
+        this.printAll();
+        System.out.printf("--------%n");
+        return curr;
+      }
+      
+    }
+  }
+
+  private void balance(Node<E> curr)
+  {
+    // Case: curr is root
+    if (curr == this.root)
+    {
+      curr.color = Color.black;
+      return;
+    }
+
+
+
+    Node<E> parent = curr.parent;
+
+    // Case: valid tree
+    if (curr.parent.color == Color.black) return;
+
+    Node<E> grandparent = parent.parent;
+
+
+
+    // Case: parent's sibling is black or null (invalid 4-node)
+    Node<E> uncle = (grandparent.left == parent) ? grandparent.right : grandparent.left;
+    if (uncle == null || uncle.color != parent.color)
+    {
+      boolean currIsLeft = (parent.left == curr), parentIsLeft = (grandparent.left == parent);
+
+      if (currIsLeft == parentIsLeft) // outer child
+      {
+        singleRotation(parent);
+      }
+      else // inner child
+      {
+        doubleRotation(curr);
+      }
+
+      return;
+    } 
+
+    // Case: parent's sibling is red (overflown "5-node")
+    grandparent.right.color = Color.black;
+    grandparent.left.color = Color.black;
+    grandparent.color = Color.red;
+    balance(grandparent);
   }
 
   /**
@@ -161,7 +304,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @param child
    */
 
-  private void singleRotation(Node<E> child)
+  public void singleRotation(Node<E> child)
   {
     Node<E> parent = child.parent, grandparent = parent.parent, grandchild;
 
@@ -202,6 +345,21 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
     Color parentColor = parent.color;
     parent.color = child.color;
     child.color = parentColor;
+
+    if (this.root == parent)
+    {
+      this.root = child;
+    }
+  }
+
+  /**
+   * double rotate grandchild to be grandparent (and make it black)
+   * @param grandchild
+   */
+  public void doubleRotation(Node<E> grandchild)
+  {
+    singleRotation(grandchild);
+    singleRotation(grandchild);
   }
 
   // properties
