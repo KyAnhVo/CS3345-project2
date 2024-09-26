@@ -102,20 +102,24 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @returns true if the tree contains the element or false otherwise.
    */
   public boolean contains(E element) {
+    return findElement(element) != null;
+  }
+
+  private Node<E> findElement(E element)
+  {
     Node<E> curr = this.root;
-    
-    while (curr != null)
-    {
+
+    while (curr != null) {
       int compare = element.compareTo(curr.val);
       if (compare == 0)
-        return true;
+        return curr;
       else if (compare > 0)
         curr = curr.right;
       else
         curr = curr.left;
     }
 
-    return false; // curr == null, which means no element found
+    return null;
   }
 
   /**
@@ -285,8 +289,38 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    *
    * @param element The element to be removed.
    */
-  public void remove(E element) {
+  public void remove(E element)
+  {
+    Node<E> curr = findElement(element);
+    if (curr == null) return;
 
+    this.size--;
+
+    // swap if not a <= 1 child node
+    if (curr.left != null && curr.right != null)
+      curr = this.swapWithSuccessor(curr);
+  }
+
+  private Node<E> swapWithSuccessor(Node<E> node)
+  {
+    if (node == null) return null;
+    if (node.right == null) return null;
+
+    Node<E> successor = node.right;
+    while (successor.left != null)
+    {
+      successor = successor.left;
+    }
+
+    E nodeVal = node.val;
+    node.val = successor.val;
+    successor.val = nodeVal;
+
+    Color nodeColor = node.color;
+    node.color = successor.color;
+    successor.color = nodeColor;
+
+    return successor;
   }
 
   /**
@@ -307,7 +341,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * @param child
    */
 
-  public void singleRotation(Node<E> child)
+  private void singleRotation(Node<E> child)
   {
     Node<E> parent = child.parent, grandparent = parent.parent, grandchild;
 
@@ -359,7 +393,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * double rotate grandchild to be grandparent (and make it black)
    * @param grandchild
    */
-  public void doubleRotation(Node<E> grandchild)
+  private void doubleRotation(Node<E> grandchild)
   {
     singleRotation(grandchild);
     singleRotation(grandchild);
@@ -374,7 +408,7 @@ public class MyRedBlackTree<E extends Comparable<? super E>> {
    * Node and Enum
    */
 
-  public static class Node<E>
+  private static class Node<E>
   {
     public E val;
     public Node<E> left, right, parent;
