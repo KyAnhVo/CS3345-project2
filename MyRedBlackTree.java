@@ -65,8 +65,8 @@
    /**
     * Print 2*depth ='s followed by node's value and color
     * in an inorder traversal order.
-    * @param node
-    * @param depth
+    * @param node node to print and recurse
+    * @param depth depth of current node
     */
    private void printNode(Node<E> node, int depth)
    {
@@ -159,7 +159,6 @@
     * If the element already exists in the tree, this method makes no changes.
     * <p>
     * Implementation should run in O(log n) time for a tree of n elements.
-    * 
     * will throw NullPointerException when element == null.
     *
     * @param element The element to be inserted.
@@ -179,8 +178,8 @@
  
    /**
     * Used for insert before balancing in inset()
-    * @param element
-    * @return
+    * @param element element to insert
+    * @return node of newly inserted element
     */
    private Node<E> insertNoBalance(E element)
    {
@@ -190,7 +189,7 @@
  
      if (curr == null)
      {
-       this.root = new Node<E>(element, Color.black, null);
+       this.root = new Node<>(element, Color.black, null);
        this.size++;
        return this.root;
      }
@@ -213,7 +212,7 @@
          }
          else // insert new node
          { 
-           curr.right = new Node<E>(element, Color.red, curr);
+           curr.right = new Node<>(element, Color.red, curr);
            curr = curr.right;
            this.size++;
            return curr;
@@ -223,11 +222,10 @@
        if (curr.left != null) // go to left node
        {
          curr = curr.left;
-         continue;
        }
        else // insert new node
        {
-         curr.left = new Node<E>(element, Color.red, curr);
+         curr.left = new Node<>(element, Color.red, curr);
          curr = curr.left;
          this.size++;
          return curr;
@@ -371,7 +369,7 @@
  
    /**
     * rotate child up and parent down
-    * @param child
+    * @param child: node to be rotated / pushed up
     */
  
    private void singleRotation(Node<E> child)
@@ -424,7 +422,7 @@
  
    /**
     * double rotate grandchild to be grandparent (and make it black)
-    * @param grandchild
+    * @param grandchild: node to be pushed up
     */
    private void doubleRotation(Node<E> grandchild)
    {
@@ -457,6 +455,6 @@
      }
    }
  
-   public static enum Color { red, black }
+   public enum Color { red, black }
  }
  
