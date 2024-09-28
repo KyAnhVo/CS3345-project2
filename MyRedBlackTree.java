@@ -8,6 +8,7 @@
  */
 
  import java.lang.Math;
+ import java.util.Scanner;
 
  public class MyRedBlackTree<E extends Comparable<? super E>> {
  
@@ -16,20 +17,18 @@
     */
    public static void main(String[] args)
    {
+     int n;
+     int k = 3;
+     System.out.print("REMOVE: ");
+    Scanner sc = new Scanner(System.in);
+    n = sc.nextInt();
      MyRedBlackTree<Integer> tree = new MyRedBlackTree<>();
-     for (int n = 0; n <= 10; n++)
-     {
-       int ins = (int) (Math.random() * 20);
-       System.out.print("Insert: ");
-       System.out.println(ins);
-       System.out.println();
- 
-       tree.insert(ins);
-       System.out.printf("size = %d%n", tree.size());
-       tree.printAll();
- 
-       System.out.print("\n\n=============================\n\n");
-     }
+     for (int i = -1 * k; i <= k; i++)
+       tree.insert(i);
+     tree.printAll();
+     System.out.println("_________________");
+     tree.remove(n);
+     tree.printAll();
    }
  
    /**
@@ -170,7 +169,7 @@
      // null check element
      if (element == null)
        throw new NullPointerException();
-     
+
      Node<E> curr = this.insertNoBalance(element);
      if (curr == null) return;
      this.balance(curr);
@@ -289,19 +288,23 @@
     */
    public void remove(E element)
    {
-     Node<E> curr = findElement(element);
-     if (curr == null) return;
- 
-     this.size--;
- 
-     // swap if not a <= 1 child node
-     if (curr.left != null && curr.right != null)
-       curr = this.swapWithSuccessor(curr);
-       
+      Node<E> curr = findElement(element);
+      if (curr == null) return;
+
+
+      this.size--;
+
+      // swap if not a <= 1 child node
+      if (curr.left != null && curr.right != null)
+        curr = this.swapWithSuccessor(curr);
+
+
+      removeRecurse(curr);
    }
  
    private Node<E> swapWithSuccessor(Node<E> node)
    {
+
      if (node == null) return null;
      if (node.right == null) return null;
  
@@ -315,23 +318,27 @@
      node.val = successor.val;
      successor.val = nodeVal;
  
-     Color nodeColor = node.color;
-     node.color = successor.color;
-     successor.color = nodeColor;
- 
      return successor;
    }
  
    private void removeRecurse(Node<E> curr)
    {
+
      Node<E> parent = curr.parent, child = (curr.left == null) ? curr.right : curr.left;
      boolean currIsLeft;
      
      if (curr == root) // bring child up to be root, change child's color to black
      {
+
+       if (child == null) // curr is only node
+       {
+         root = null;
+         return;
+       }
        root = child;
        child.parent = null;
        child.color = Color.black;
+       return;
      }
      
      /* FROM THIS POINT, ASSUME PARENT NOT NULL */
@@ -340,6 +347,7 @@
  
      if (curr.color == Color.red) // remove curr, bring child up
      {
+
        if (currIsLeft)
          parent.left = child;
        else
@@ -347,11 +355,116 @@
  
        if (child != null)
          child.parent = parent;
+
+       return;
      }
  
      /* FROM THIS POINT, ASSUME CURR BLACK */
  
      Node<E> sibling  = currIsLeft ? parent.right : parent.left;
+     if (sibling != null && sibling.color == Color.red) // doing preprocessing
+     {
+
+       singleRotation(sibling);
+       sibling = (parent.left == curr) ? parent.right : parent.left;
+
+     }
+
+     // FROM NOW ON, ASSUME W IS BLACK OR NULL.
+
+     // CASE 1: W HAS A RED CHILD
+     // THROUGHOUT CASE 1, W IS BLACK AND HAS AT LEAST
+     // 1 RED CHILD.
+
+     Node<E> redNephew = null;
+     boolean redNephewIsLeft = false;
+     if (sibling != null)
+     {
+
+
+       if (sibling.left != null && sibling.left.color == Color.red)
+       {
+         redNephew = sibling.left;
+         redNephewIsLeft = true;
+       }
+       else if (sibling.right != null && sibling.right.color == Color.red)
+       {
+         redNephew = sibling.right;
+       }
+
+
+     }
+
+     if (redNephew != null) // sibling has a red child
+     {
+
+       // boolean to consider if redNephew is outer or inner grandchild of p
+       boolean redIsInner = (redNephewIsLeft && currIsLeft) || !(redNephewIsLeft || currIsLeft);
+
+       if (redIsInner) // Case 1A
+       {
+
+         Color parentColor = parent.color;
+         Color siblingColor = sibling.color;
+         doubleRotation(redNephew);
+         redNephew.color = parentColor;
+         sibling.color = siblingColor;
+       }
+       else // (redIsOuter)
+       {
+         singleRotation(sibling);
+         redNephew.color = Color.black;
+       }
+
+       parent.color = Color.black;
+
+       // remove v
+       if (child != null)
+         child.parent = parent;
+       if (currIsLeft) parent.left = child;
+       else parent.right = child;
+       return;
+     }
+
+     // FROM NOW ON, ASSUME SIBLING IS NULL OR BLACK, AND IF SIBLING IS BLACK,
+     // SIBLING HAS NO RED CHILD.
+
+     // CASE 2: No red nephew.
+
+
+     if (parent.color == Color.red) // Case 2A: p is red.
+     {
+       parent.color = Color.black;
+       if (sibling != null)
+         sibling.color = Color.red;
+
+       // remove v
+       if (child != null)
+         child.parent = parent;
+       if (currIsLeft) parent.left = child;
+       else parent.right = child;
+       return;
+     }
+
+     // Case 2B: p is black
+
+     // remove v
+     if (child != null)
+       child.parent = parent;
+     if (currIsLeft) parent.left = child;
+     else parent.right = child;
+
+     // single v out then put v on p, recurse on v
+     curr.left = null; curr.right = null;
+     curr.parent = parent.parent;
+     curr.left = parent;
+     parent.parent = curr;
+     if (curr.parent.left == parent) curr.parent.left = curr;
+     else curr.parent.right = curr;
+
+
+     
+     removeRecurse(curr);
    }
  
    /**
@@ -435,10 +548,34 @@
    private int size;
    private Node<E> root;
  
+
+    public void debugNode(Node<E> curr)
+    {
+      System.out.println();
+      System.out.printf("curr.val = %d%n", curr.val);
+      System.out.printf("curr.color = %s%n", curr.color);
+      System.out.printf("curr.parent %B%n", curr.parent != null);
+      System.out.printf("curr.left = %B%n", curr.right != null);
+      System.out.printf("curr.right = %B%n", curr.left != null);
+      System.out.println();
+    }
+
+    public void debugNodeInorder(Node<E> curr)
+    {
+      if (curr == null) return;
+      debugNodeInorder(curr.left);
+      debugNode(curr);
+      debugNodeInorder(curr.right);
+    }
+
+    public void debugTree()
+    {
+      debugNodeInorder(root);
+    }
+
    /**
     * Node and Enum
     */
- 
    private static class Node<E>
    {
      public E val;
