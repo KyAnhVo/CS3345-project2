@@ -11,26 +11,6 @@
  import java.util.Scanner;
 
  public class MyRedBlackTree<E extends Comparable<? super E>> {
- 
-   /**
-    * Debug main
-    */
-   public static void main(String[] args)
-   {
-     int n;
-     int k = 3;
-     System.out.print("REMOVE: ");
-    Scanner sc = new Scanner(System.in);
-    n = sc.nextInt();
-     MyRedBlackTree<Integer> tree = new MyRedBlackTree<>();
-     for (int i = -1 * k; i <= k; i++)
-       tree.insert(i);
-     tree.printAll();
-     System.out.println("_________________");
-     tree.remove(n);
-     tree.printAll();
-   }
- 
    /**
     * Instantiate an empty red-black tree.
     */
@@ -301,7 +281,12 @@
 
       removeRecurse(curr);
    }
- 
+
+   /**
+    * Change node to node's successor
+    * @param node
+    * @return
+    */
    private Node<E> swapWithSuccessor(Node<E> node)
    {
 
@@ -320,7 +305,11 @@
  
      return successor;
    }
- 
+
+   /**
+    * Recursion step of the removal process.
+    * @param curr
+    */
    private void removeRecurse(Node<E> curr)
    {
 
@@ -547,31 +536,6 @@
  
    private int size;
    private Node<E> root;
- 
-
-    public void debugNode(Node<E> curr)
-    {
-      System.out.println();
-      System.out.printf("curr.val = %d%n", curr.val);
-      System.out.printf("curr.color = %s%n", curr.color);
-      System.out.printf("curr.parent %B%n", curr.parent != null);
-      System.out.printf("curr.left = %B%n", curr.right != null);
-      System.out.printf("curr.right = %B%n", curr.left != null);
-      System.out.println();
-    }
-
-    public void debugNodeInorder(Node<E> curr)
-    {
-      if (curr == null) return;
-      debugNodeInorder(curr.left);
-      debugNode(curr);
-      debugNodeInorder(curr.right);
-    }
-
-    public void debugTree()
-    {
-      debugNodeInorder(root);
-    }
 
    /**
     * Node and Enum
@@ -593,5 +557,31 @@
    }
  
    public enum Color { red, black }
+
+   // DEBUG FUNCTIONS
+
+   public void debugNode(Node<E> curr)
+   {
+     System.out.println();
+     System.out.printf("curr.val = %d%n", curr.val);
+     System.out.printf("curr.color = %s%n", curr.color);
+     System.out.printf("curr.parent %B%n", curr.parent != null);
+     System.out.printf("curr.left = %B%n", curr.right != null);
+     System.out.printf("curr.right = %B%n", curr.left != null);
+     System.out.println();
+   }
+
+   public void debugNodeInorder(Node<E> curr)
+   {
+     if (curr == null) return;
+     debugNodeInorder(curr.left);
+     debugNode(curr);
+     debugNodeInorder(curr.right);
+   }
+
+   public void debugTree()
+   {
+     debugNodeInorder(root);
+   }
  }
  

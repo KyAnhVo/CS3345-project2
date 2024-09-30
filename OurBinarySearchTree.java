@@ -24,7 +24,7 @@ public class OurBinarySearchTree<E extends Comparable<? super E>> {
   }
 
   /**
-   * Returns whether or not the tree contains the given element.
+   * Returns whether the tree contains the given element.
    * <p>
    * Runs in worst-case O(n) time and "average case" O(log n) time for a tree of n elements.
    *
